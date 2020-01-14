@@ -47,4 +47,23 @@ public class Utils {
             tab[1] = learningY - neuronY;
         return tab;
     }
+
+    public static double calculateDistanceBetweenPoints(int learningX, int learningY, int neuronX, int neuronY) {
+        return Math.sqrt((learningX - neuronX)*(learningX - neuronX) + (learningY - neuronY)*(learningY - neuronY));
+    }
+
+    public static Boolean checkIfNetworkIsGoodEnough(List learning, List neurons) {
+        int counter = 0;
+        int max = learning.size() * neurons.size();
+        //gdy jest 90% zgodnosci koniec uczenia
+        int howMuchNeed = max * (90/100);
+        for(int i = 0; i < learning.size(); i++) {
+            if(learning.get(i) == neurons.get(i)) counter++;
+        }
+        if(counter >= howMuchNeed) {
+            System.out.println("The end");
+            return true;
+        }
+        else return false;
+    }
 }

@@ -29,7 +29,10 @@ public class Main extends JFrame {
     private List<Boolean> leftWindowPixels;
     private List<Boolean> rightWindowPixels;
     private Boolean[][] twoDimensionArray;
+    private List<Integer> neuronsXUsed;
+    private List<Integer> neuronsYUsed;
     private Random random;
+    private int epoka = 0;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
     private void clearWindow() {
@@ -59,20 +62,24 @@ public class Main extends JFrame {
     private void initListener() {
         jMenuItemInitWindows.addActionListener(e -> {
             leftWindow = new LeftWindow();
-            rightWindow = new RightWindow();
+           // rightWindow = new RightWindow();
         });
 
         jMenuItemStartLearning.addActionListener(e -> {
             System.out.println("Rozpoczynam uczenie");
             //tablice booleanow
             leftWindowPixels = new ArrayList(leftWindow.getPixels());
-            rightWindowPixels = new ArrayList(rightWindow.getPixels());
+            //rightWindowPixels = new ArrayList(rightWindow.getPixels());
             //convert to 2 dimension array
             twoDimensionArray = Utils.convertToTwoDimension(leftWindowPixels);
             //init Random Neuron with true and repaint board
             initRandomNeuron();
 
-                    scheduledExecutorService.scheduleAtFixedRate(() -> adjustNeuron(leftWindowPixels), 0, 300, TimeUnit.MILLISECONDS);
+            //todo Wykonuj tak długo aż jest 90% zgodności, nie dziala bo zawsze jest tyle zgodnosci bo patrzy tez na biale piksele
+
+            //while(!Utils.checkIfNetworkIsGoodEnough(leftWindowPixels, learningBoard.returnListOfPixels())) {
+                scheduledExecutorService.scheduleAtFixedRate(() -> adjustNeuron(leftWindowPixels), 0, 300, TimeUnit.MILLISECONDS);
+            //}
             });
     }
 
@@ -80,9 +87,10 @@ public class Main extends JFrame {
         List<Boolean> neuronList = learningBoard.returnListOfPixels();
         Boolean tabNeuron[][];
         Boolean tabLeftWindow[][];
+        neuronsXUsed = new ArrayList<>();
+        neuronsYUsed = new ArrayList<>();
         int randInt1 ;
         int randInt2;
-
         int randInt3;
         int randInt4;
         Random r = new Random();
@@ -93,9 +101,16 @@ public class Main extends JFrame {
             randInt1 = r.nextInt(20);
             randInt2 = r.nextInt(20);
             //bierzemy losowy element z ciagu uczacego ktory zawiera wartosc true
-            if (tabLeftWindow[randInt1][randInt2] == true) {
+            if (tabLeftWindow[randInt1][randInt2]) {
                 break;
             }
+
+             //to warunek do Ifa tego wyżej aby nie brał tych samych elementów kilka razy ale jakos nie działa && (!neuronsXUsed.contains(randInt1) || !neuronsYUsed.contains(randInt2))
+//            neuronsXUsed.add(randInt1);
+//            neuronsYUsed.add(randInt2);
+//            System.out.println(neuronsXUsed.size());
+//            System.out.println(neuronsYUsed.size());
+
         }
             //TODO znajdujemy neuron z wartoscia TRUE ktory jest najblizej do tego z ciagu uczacego i przesówamy go troche w tamtym kierunku
             //TODO jak to będzie działać to właściwie już chyba program gotowy
@@ -107,7 +122,7 @@ public class Main extends JFrame {
         while(true) {
             randInt3 = r.nextInt(20);
             randInt4 = r.nextInt(20);
-            if (tabNeuron[randInt3][randInt4] == true) {
+            if (tabNeuron[randInt3][randInt4]) {
                 break;
             }
         }
@@ -121,10 +136,32 @@ public class Main extends JFrame {
 
         // Wedłóg naszej odswieżonej listy neuronow ustawiamy, lecimy po wszystkich elementach sekcji i ustawiamy je tam na true gdzie true jest w naszej odswiezonej liscie
         for(int i = 0; i < learningBoard.sections.size(); i++) {
-            if(listOfNeuron.get(licznik) == true) learningBoard.sections.get(i).setActive(true);
+            if(listOfNeuron.get(licznik)) learningBoard.sections.get(i).setActive(true);
             licznik++;
         }
         learningBoard.repaint();
+        epoka++;
+       // System.out.println("EPOKA" + epoka);
+        //System.out.println("najblizszy neuron" + getClosestNeuron(tabLeftWindow, tabNeuron));
+    }
+
+    //todo nie dziala
+    private List<Integer> getClosestNeuron(Boolean[][] tabLearning, Boolean[][] tabNeurons) {
+        double minDistance = Integer.MAX_VALUE;
+        List<Integer> points = new ArrayList<>();
+        for(int i = 0; i < tabLearning.length; i++) {
+            for(int j = 0; j < tabLearning.length; j++) {
+                double distance = Utils.calculateDistanceBetweenPoints(i, j, i, j);
+                if(distance < minDistance) {
+                    points.clear();
+                    minDistance = distance;
+                    points.add(i);
+                    points.add(j);
+                }
+
+            }
+        }
+        return points;
     }
 
     private void initRandomNeuron() {
