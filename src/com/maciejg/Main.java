@@ -97,7 +97,10 @@ public class Main extends JFrame {
                 break;
             }
         }
-            //znajdujemy neuron z wartoscia TRUE ktory jest najblizej do tego z ciagu uczacego i ustawiamy go na tamtym miejscu
+            //TODO znajdujemy neuron z wartoscia TRUE ktory jest najblizej do tego z ciagu uczacego i przesówamy go troche w tamtym kierunku
+            //TODO jak to będzie działać to właściwie już chyba program gotowy
+            //TODO zeby to zrobic to trzeba uzyc tego wzoru matematycznego mam na wektor
+
 
 
         //hmm spróbujmy wziac jakikolwiek ktory ma wartosc true i zamienic go z naszym z ciagu uczacego
@@ -108,10 +111,15 @@ public class Main extends JFrame {
                 break;
             }
         }
+        //podmieniamy wartosc naszego neuronu ktory chcemy ustawic, z false na true
         tabNeuron[randInt3][randInt4] = false;
         tabNeuron[randInt1][randInt2] = true;
+
+        //konwertujemy z tablicy do listy, ponieważ nasz zjebany program tego wymaga
         List<Boolean> listOfNeuron = Utils.convertToList(tabNeuron);
         int licznik = 0;
+
+        // Wedłóg naszej odswieżonej listy neuronow ustawiamy, lecimy po wszystkich elementach sekcji i ustawiamy je tam na true gdzie true jest w naszej odswiezonej liscie
         for(int i = 0; i < learningBoard.sections.size(); i++) {
             if(listOfNeuron.get(licznik) == true) learningBoard.sections.get(i).setActive(true);
             licznik++;

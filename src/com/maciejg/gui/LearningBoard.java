@@ -33,7 +33,7 @@ public class LearningBoard extends CustomBoard {
         random = new Random();
         int randIntX;
         int randIntY;
-        for (int i = 0; i < 30; i++) {
+        for (int i = 0; i < 20; i++) {
             for (Section s : sections) {
                 randIntX = random.nextInt(400);
                 randIntY = random.nextInt(400);
