@@ -13,7 +13,7 @@ public class LeftWindow extends JFrame implements Conversion {
         int h = getHeight();
         int w = getWidth();
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setSize(400,400);
+        setSize(400,430);
         setResizable(false);
         setLocation(200, 400);
         initBoard();
@@ -21,7 +21,7 @@ public class LeftWindow extends JFrame implements Conversion {
     }
 
     private void initBoard() {
-        add(drawingBoard = new DrawingBoard(400, 400, 20));
+        add(drawingBoard = new DrawingBoard(400, 430, 20));
     }
 
     public List getPixels() {
