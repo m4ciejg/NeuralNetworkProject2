@@ -11,10 +11,9 @@ import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.concurrent.*;
 
 public class Main extends JFrame {
     private static final Integer EPOCH = 20;
@@ -35,6 +34,9 @@ public class Main extends JFrame {
     private Random random;
     private int epoka = 0;
     private final ScheduledExecutorService scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledExecutorService scheduledExecutorService2 = Executors.newSingleThreadScheduledExecutor();
+
+    private final CountDownLatch latch = new CountDownLatch(1);
 
     private void clearWindow() {
         repaint();
@@ -76,13 +78,28 @@ public class Main extends JFrame {
             twoDimensionArray2 = Utils.convertToTwoDimension(rightWindowPixels);
             //init Random Neuron with true and repaint board
             initRandomNeuron();
+            java.util.Timer timer = new Timer();
 
-            //todo Wykonuj tak długo aż jest 90% zgodności, nie dziala bo zawsze jest tyle zgodnosci bo patrzy tez na biale piksele
+            Future f1 = scheduledExecutorService.scheduleAtFixedRate(() -> {
+                        adjustNeuron(leftWindowPixels);
+                    },
+                    0, 300, TimeUnit.MILLISECONDS);
 
-            //while(!Utils.checkIfNetworkIsGoodEnough(leftWindowPixels, learningBoard.returnListOfPixels())) {
-                scheduledExecutorService.scheduleAtFixedRate(() -> adjustNeuron(leftWindowPixels), 0, 300, TimeUnit.MILLISECONDS);
-            //}
-            });
+            TimerTask delayedThreadStart = new TimerTask() {
+                @Override
+                public void run() {
+                    f1.cancel(true);
+
+                    scheduledExecutorService2.scheduleAtFixedRate(() -> {
+                                adjustNeuron(rightWindowPixels);
+                            },
+                            10, 300, TimeUnit.MILLISECONDS);
+                }
+            };
+
+            timer.schedule(delayedThreadStart, 20 * 1000);
+        });
+
     }
 
     private void adjustNeuron(List<Boolean> leftWindowPixels) {
@@ -96,9 +113,9 @@ public class Main extends JFrame {
         int randInt3;
         int randInt4;
         Random r = new Random();
-
         tabNeuron = Utils.convertToTwoDimension(neuronList);
         tabLeftWindow = Utils.convertToTwoDimension(leftWindowPixels);
+
         while(true) {
             randInt1 = r.nextInt(20);
             randInt2 = r.nextInt(20);
