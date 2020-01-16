@@ -29,6 +29,7 @@ public class Main extends JFrame {
     private List<Boolean> leftWindowPixels;
     private List<Boolean> rightWindowPixels;
     private Boolean[][] twoDimensionArray;
+    private Boolean[][] twoDimensionArray2;
     private List<Integer> neuronsXUsed;
     private List<Integer> neuronsYUsed;
     private Random random;
@@ -62,16 +63,17 @@ public class Main extends JFrame {
     private void initListener() {
         jMenuItemInitWindows.addActionListener(e -> {
             leftWindow = new LeftWindow();
-           // rightWindow = new RightWindow();
+            rightWindow = new RightWindow();
         });
 
         jMenuItemStartLearning.addActionListener(e -> {
             System.out.println("Rozpoczynam uczenie");
             //tablice booleanow
             leftWindowPixels = new ArrayList(leftWindow.getPixels());
-            //rightWindowPixels = new ArrayList(rightWindow.getPixels());
+            rightWindowPixels = new ArrayList(rightWindow.getPixels());
             //convert to 2 dimension array
             twoDimensionArray = Utils.convertToTwoDimension(leftWindowPixels);
+            twoDimensionArray2 = Utils.convertToTwoDimension(rightWindowPixels);
             //init Random Neuron with true and repaint board
             initRandomNeuron();
 
@@ -146,7 +148,8 @@ public class Main extends JFrame {
     }
 
     //todo nie dziala
-    private List<Integer> getClosestNeuron(Boolean[][] tabLearning, Boolean[][] tabNeurons) {
+
+    private List<Integer> znajdzNajblizszyNeuron(Boolean[][] tabLearning, Boolean[][] tabNeurons) {
         double minDistance = Integer.MAX_VALUE;
         List<Integer> points = new ArrayList<>();
         for(int i = 0; i < tabLearning.length; i++) {
